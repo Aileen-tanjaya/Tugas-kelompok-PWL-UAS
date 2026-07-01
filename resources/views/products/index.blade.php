@@ -5,7 +5,7 @@
                 {{ __('Manajemen Stok') }}
             </h2>
             <a href="{{ route('stok.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition shadow-sm">
-                ➕ Tambah Barang
+                Tambah Barang
             </a>
         </div>
     </x-slot>

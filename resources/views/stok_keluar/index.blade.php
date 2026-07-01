@@ -7,10 +7,10 @@
             </h2>
             <div class="flex items-center gap-2">
                 <a href="{{ route('stok.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-semibold transition flex items-center gap-1">
-                    <span>⬅️ Manajemen Stok</span>
+                    <span>Manajemen Stok</span>
                 </a>
                 <a href="{{ route('stok_keluar.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold transition">
-                     Catat Stok Keluar
+                     Tambah Stok Keluar
                 </a>
             </div>
         </div>

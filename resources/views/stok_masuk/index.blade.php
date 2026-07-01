@@ -27,11 +27,11 @@
                     <div class="flex space-x-2">
                         <a href="{{ route('stok.index') }}"
                            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-full text-sm font-semibold transition shadow-sm flex items-center gap-1">
-                            ⬅️ Manajemen Stok
+                            Manajemen Stok
                         </a>
                         <a href="{{ route('stok_masuk.create') }}"
                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-sm transition">
-                            + Tambah Stok Masuk
+                            Tambah Stok Masuk
                         </a>
                     </div>
 
