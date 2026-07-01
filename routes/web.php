@@ -2,13 +2,14 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\StokController;
+use App\Http\Controllers\StokMasukController;
+use App\Http\Controllers\StokKeluarController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,79 +17,93 @@ use Illuminate\Support\Facades\Hash;
 |--------------------------------------------------------------------------
 */
 
-// 1. Halaman Utama Web
+// Halaman Awal
 Route::get('/', function () {
     return view('welcome');
 });
 
-// 2. Tampilkan Halaman Login Bawaan Kelompok
+// Login
 Route::get('/login', function () {
     return view('auth.login');
 })->middleware('guest')->name('login');
 
-// 3. GERBANG DARURAT (Otomatis Buat Akun & Login Langsung)
 Route::post('/login', function (Request $request) {
     $request->validate([
-        'email' => ['required', 'string', 'email'],
-        'password' => ['required', 'string'],
+        'email' => ['required', 'email'],
+        'password' => ['required'],
     ]);
 
-    // Jika yang login menggunakan email semangat
-    if ($request->email === 'semangat@gmail.com') {
-        // Cek apakah akunnya sudah ada di database kelompok?
+    if ($request->email == 'semangat@gmail.com') {
         $user = User::where('email', 'semangat@gmail.com')->first();
-        
-        // JIKA BELUM ADA, LANGSUNG KITA BUATKAN DI SINI SECARA OTOMATIS!
+
         if (!$user) {
             $user = User::create([
                 'name' => 'Admin Semangat',
                 'email' => 'semangat@gmail.com',
-                'password' => Hash::make($request->password), // Memakai password apa saja yang kamu ketik
-                'role' => 'admin', // Langsung diberi role admin kelompok
+                'password' => Hash::make($request->password),
+                'role' => 'admin',
             ]);
         }
 
-        // Langsung loginkan tanpa hambatan password
         Auth::login($user);
         $request->session()->regenerate();
-        return redirect()->intended('/dashboard');
+        return redirect('/dashboard');
     }
 
-    // Login normal untuk sisa anggota kelompok lainnya
-    $credentials = $request->only('email', 'password');
-    if (Auth::attempt($credentials, $request->boolean('remember'))) {
+    if (Auth::attempt($request->only('email', 'password'))) {
         $request->session()->regenerate();
-        return redirect()->intended('/dashboard');
+        return redirect('/dashboard');
     }
 
     return back()->withErrors([
-        'email' => __('auth.failed'),
+        'email' => 'Email atau Password salah'
     ]);
 });
 
-// 4. Dashboard Utama Tugas Kelompok
+// Dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// 5. Hak Akses Profil Umum
+// Profile Auth
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// 6. FITUR UTAMA KELOMPOK: Manajemen Pengguna, Barang, dan Stok (Tanpa Fitur Langganan)
+// Semua Menu Aplikasi (Hanya Bisa Diakses Setelah Login)
 Route::middleware(['auth'])->group(function () {
+
+    // User Management
     Route::resource('users', UserController::class)->except(['show']);
+
+    // Master Manajemen Barang
     Route::resource('products', ProductController::class);
-    Route::resource('stok', StokController::class);
+
+    // Master Manajemen Stok (Dialihkan menggunakan ProductController agar Tampilan Baru Aktif)
+    Route::get('/stok', [ProductController::class, 'index'])->name('stok.index');
+    Route::get('/stok/create', [ProductController::class, 'create'])->name('stok.create');
+    Route::post('/stok', [ProductController::class, 'store'])->name('stok.store');
+    Route::get('/stok/{product}/edit', [ProductController::class, 'edit'])->name('stok.edit');
+    Route::put('/stok/{product}', [ProductController::class, 'update'])->name('stok.update');
+    Route::delete('/stok/{product}', [ProductController::class, 'destroy'])->name('stok.destroy');
+
+    // Transaksi Stok Masuk
+    Route::get('/stok-masuk/search', [StokMasukController::class, 'search'])->name('stok_masuk.search');
+    Route::resource('stok-masuk', StokMasukController::class)->names('stok_masuk');
+
+    // Transaksi Stok Keluar
+    Route::get('/stok-keluar/search', [StokKeluarController::class, 'search'])->name('stok_keluar.search');
+    Route::resource('stok-keluar', StokKeluarController::class)->names('stok_keluar');
 });
 
-// 7. Rute Logout
+// Logout
 Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
     return redirect('/login');
 })->middleware('auth')->name('logout');
+
+require __DIR__ . '/auth.php';

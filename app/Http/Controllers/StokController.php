@@ -2,113 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Stok;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class StokController extends Controller
 {
-    
-    public function index()
+    /**
+     * Menampilkan halaman Manajemen Stok
+     * (hanya daftar barang).
+     */
+    public function index(): View
     {
-        $search = request('search');
-        $status = request('status');
+        $products = Product::orderBy('id', 'desc')->paginate(10);
 
-        $stoks = Stok::when($search, function ($query, $search) {
-            return $query->where('nama_barang', 'like', "%{$search}%")
-                         ->orWhere('kode_barang', 'like', "%{$search}%");
-        })
-        ->when($status, function ($query, $status) {
-            if ($status == 'aman') {
-                return $query->where('stok', '>', 2);
-            } elseif ($status == 'menipis') {
-                return $query->where('stok', '>', 0)->where('stok', '<=', 2);
-            } elseif ($status == 'habis') {
-                return $query->where('stok', '<=', 0);
-            }
-        })
-        ->orderBy('id', 'desc')
-        ->paginate(10)
-        ->withQueryString();
-
-        $totalSeluruhStok = Stok::sum('stok'); 
-        $stokHabis = Stok::where('stok', '<=', 0)->count();
-        $stokMenipis = Stok::where('stok', '>', 0)->where('stok', '<=', 2)->count();
-        $stokAman = Stok::where('stok', '>', 2)->count();
-        
-        return view('stok.index', compact('stoks', 'totalSeluruhStok', 'stokHabis', 'stokMenipis', 'stokAman'));
+        return view('stok.index', compact('products'));
     }
 
+    /**
+     * Semua proses CRUD stok dipindahkan
+     * ke StokMasukController dan StokKeluarController.
+     */
 
-    public function create(): View
+    public function create()
     {
-        return view('stok.create');
+        return redirect()->route('stok.index');
     }
 
-
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
-        // 1. Validasi input baru sesuai form create.blade.php
-        $validated = $request->validate([
-            'kode_barang' => ['required', 'string', 'max:50'],
-            'nama_barang' => ['required', 'string', 'max:255'],
-            'stok_masuk'  => ['required', 'integer', 'min:0'],
-            'stok_keluar' => ['required', 'integer', 'min:0'],
-        ]);
-
-        // 2. HITUNG OTOMATIS: Stok Tersedia = Masuk - Keluar
-        $validated['stok'] = $request->stok_masuk - $request->stok_keluar;
-
-        // 3. CATAT WAKTU: Menyimpan waktu saat stok pertama kali dibuat
-        $validated['tanggal_update'] = now();
-
-        // 4. REKAM USER: Otomatis menyimpan ID admin/pengguna yang sedang login
-        $validated['user_id'] = auth()->id();
-
-        // 5. Simpan ke Database
-        Stok::create($validated);
-
-        return Redirect::route('stok.index')->with('success', 'Stok berhasil ditambahkan.');
+        return redirect()->route('stok.index');
     }
 
-
-    public function edit(Stok $stok): View
+    public function edit($id)
     {
-        return view('stok.edit', compact('stok'));
+        return redirect()->route('stok.index');
     }
 
-
-    public function update(Request $request, Stok $stok): RedirectResponse
+    public function update(Request $request, $id)
     {
-        // 1. Validasi input baru sesuai form edit.blade.php
-        $validated = $request->validate([
-            'kode_barang' => ['required', 'string', 'max:50'],
-            'nama_barang' => ['required', 'string', 'max:255'],
-            'stok_masuk'  => ['required', 'integer', 'min:0'],
-            'stok_keluar' => ['required', 'integer', 'min:0'],
-        ]);
-
-        // 2. HITUNG OTOMATIS: Stok Tersedia = Masuk - Keluar
-        $validated['stok'] = $request->stok_masuk - $request->stok_keluar;
-
-        // 3. AMANKAN WAKTU EDIT: Memperbarui tanggal edit setiap kali data stok di-update
-        $validated['tanggal_update'] = now();
-
-        // 4. REKAM USER: Otomatis memperbarui ID pengguna yang terakhir melakukan edit
-        $validated['user_id'] = auth()->id();
-
-        // 5. Update data di database
-        $stok->update($validated);
-
-        return Redirect::route('stok.index')->with('success', 'Stok berhasil diupdate.');
+        return redirect()->route('stok.index');
     }
 
-
-    public function destroy(Stok $stok): RedirectResponse
+    public function destroy($id)
     {
-        $stok->delete();
-        return Redirect::route('stok.index')->with('success', 'Stok berhasil dihapus.');
+        return redirect()->route('stok.index');
     }
 }
