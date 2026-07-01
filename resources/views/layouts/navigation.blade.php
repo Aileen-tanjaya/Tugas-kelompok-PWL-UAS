@@ -23,13 +23,13 @@
                     @endif
 
                     <x-nav-link :href="route('stok.index')" :active="request()->routeIs('stok.*')">
-                        {{ __('📦 Manajemen Stok') }}
+                        {{ __('Manajemen Stok') }}
                     </x-nav-link>
                     <x-nav-link :href="route('stok_masuk.index')" :active="request()->routeIs('stok_masuk.*')">
-                        {{ __('📥 Stok Masuk') }}
+                        {{ __('Stok Masuk') }}
                     </x-nav-link>
                     <x-nav-link :href="route('stok_keluar.index')" :active="request()->routeIs('stok_keluar.*')">
-                        {{ __('📤 Stok Keluar') }}
+                        {{ __('Stok Keluar') }}
                     </x-nav-link>
                 </div>
             </div>

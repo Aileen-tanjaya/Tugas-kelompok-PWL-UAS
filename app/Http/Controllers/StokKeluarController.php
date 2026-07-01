@@ -52,12 +52,12 @@ class StokKeluarController extends Controller
                 'keterangan' => $request->keterangan,
             ]);
 
-            // PAKSA Kurangi stok di tabel produk secara otomatis
+            // Kurangi stok di tabel produk secara otomatis
             $product->decrement('stok', $request->jumlah);
         });
 
-        // 3. PAKSA REDIRECT KEMBALI KE HALAMAN UTAMA (INDEX)
-        return redirect()->route('stok_keluar.index')->with('success', 'Transaksi stok keluar berhasil dicatat dan stok barang otomatis berkurang!');
+        // 3. TULISAN SUKSES DI SINI SUDAH DIHAPUS TOTAL
+        return redirect()->route('stok_keluar.index');
     }
 
     public function destroy($id)
@@ -72,6 +72,7 @@ class StokKeluarController extends Controller
             $stokKeluar->delete();
         });
 
-        return redirect()->route('stok_keluar.index')->with('success', 'Log transaksi berhasil dihapus dan stok barang telah dikembalikan!');
+        // TULISAN SUKSES DI SINI JUGA SUDAH DIHAPUS TOTAL
+        return redirect()->route('stok_keluar.index');
     }
 }
