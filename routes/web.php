@@ -33,13 +33,13 @@ Route::post('/login', function (Request $request) {
         'password' => ['required'],
     ]);
 
-    if ($request->email == 'semangat@gmail.com') {
-        $user = User::where('email', 'semangat@gmail.com')->first();
+    if ($request->email == 'admin@gmail.com') {
+        $user = User::where('email', 'admin@gmail.com')->first();
 
         if (!$user) {
             $user = User::create([
-                'name' => 'Admin Semangat',
-                'email' => 'semangat@gmail.com',
+                'name' => 'Administrator',
+                'email' => 'admin@gmail.com',
                 'password' => Hash::make($request->password),
                 'role' => 'admin',
             ]);
@@ -61,7 +61,12 @@ Route::post('/login', function (Request $request) {
 });
 
 // Dashboard
-Route::get('/dashboard', function () {
+Route::get('/dashboard', function () {    
+
+    if (Auth::user()->role === 'admin') {
+        return view('admin.dashboard'); 
+    }
+    
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
