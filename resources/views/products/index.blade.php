@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Manajemen Stok') }}
+                {{ __('Manajemen Barang') }}
             </h2>
-            <a href="{{ route('stok.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition shadow-sm">
+            <a href="{{ route('products.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition shadow-sm">
                 Tambah Barang
             </a>
         </div>
@@ -14,9 +14,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-100 dark:border-gray-700">
                 
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Daftar Stok Barang</h3>
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Master Data Barang</h3>
 
-                <form action="{{ route('stok.index') }}" method="GET" class="mb-5">
+                <form action="{{ route('products.index') }}" method="GET" class="mb-5">
                     <div class="relative w-full">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@
                                                 Habis
                                             </span>
                                         @elseif($product->stok <= 5)
-                                            <span class="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 dark:bg-yellow-500 dark:dark:text-gray-900 px-3 py-1 rounded-full text-xs font-bold block text-center shadow-xs">
+                                            <span class="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 dark:bg-yellow-500 dark:text-gray-900 px-3 py-1 rounded-full text-xs font-bold block text-center shadow-xs">
                                                 Menipis ⚠️
                                             </span>
                                         @else
@@ -102,10 +102,10 @@
                                     </td>
                                     <td class="border border-gray-200 dark:border-gray-600 p-3 text-center">
                                         <div class="flex justify-center items-center gap-1.5">
-                                            <a href="{{ route('stok.edit', $product->id) }}" class="bg-amber-400 hover:bg-amber-500 text-amber-950 px-2.5 py-1 rounded-lg text-xs font-bold transition shadow-xs">
+                                            <a href="{{ route('products.edit', $product->id) }}" class="bg-amber-400 hover:bg-amber-500 text-amber-950 px-2.5 py-1 rounded-lg text-xs font-bold transition shadow-xs">
                                                 Edit
                                             </a>
-                                            <form action="{{ route('stok.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Hapus produk ini?')">
+                                            <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Hapus produk ini?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition shadow-xs">

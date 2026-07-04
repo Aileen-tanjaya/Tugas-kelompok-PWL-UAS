@@ -16,4 +16,14 @@ class Product extends Model
         'harga',
         'stok'
     ];
+
+    public function stokMasuks()
+    {
+        return $this->hasMany(StokMasuk::class);
+    }
+
+    public function stokKeluars()
+    {
+        return $this->hasMany(StokKeluar::class);
+    }
 }

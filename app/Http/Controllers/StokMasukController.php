@@ -32,7 +32,6 @@ class StokMasukController extends Controller
             'keterangan' => 'nullable'
         ]);
 
-        // Simpan ke tabel stok_masuks
         StokMasuk::create([
             'product_id' => $request->product_id,
             'tanggal' => $request->tanggal,
@@ -41,12 +40,10 @@ class StokMasukController extends Controller
             'keterangan' => $request->keterangan,
         ]);
 
-        // Tambahkan stok barang
         $product = Product::find($request->product_id);
         $product->stok += $request->jumlah;
         $product->save();
 
-        // PERBAIKAN: Mengubah 'stok-masuk.index' menjadi 'stok_masuk.index'
         return redirect()->route('stok_masuk.index')
             ->with('success', 'Stok masuk berhasil ditambahkan');
     }
@@ -73,17 +70,14 @@ class StokMasukController extends Controller
             'keterangan' => 'nullable'
         ]);
 
-        // Kembalikan stok lama
         $produkLama = Product::find($stokMasuk->product_id);
         $produkLama->stok -= $stokMasuk->jumlah;
         $produkLama->save();
 
-        // Tambahkan stok baru
         $produkBaru = Product::find($request->product_id);
         $produkBaru->stok += $request->jumlah;
         $produkBaru->save();
 
-        // Update data
         $stokMasuk->update([
             'product_id' => $request->product_id,
             'tanggal' => $request->tanggal,
@@ -92,21 +86,18 @@ class StokMasukController extends Controller
             'keterangan' => $request->keterangan,
         ]);
 
-        // PERBAIKAN: Mengubah 'stok-masuk.index' menjadi 'stok_masuk.index'
         return redirect()->route('stok_masuk.index')
             ->with('success', 'Stok masuk berhasil diupdate');
     }
 
     public function destroy(StokMasuk $stokMasuk)
     {
-        // Kurangi stok barang
         $product = Product::find($stokMasuk->product_id);
         $product->stok -= $stokMasuk->jumlah;
         $product->save();
 
         $stokMasuk->delete();
 
-        // PERBAIKAN: Mengubah 'stok-masuk.index' menjadi 'stok_masuk.index'
         return redirect()->route('stok_masuk.index')
             ->with('success', 'Stok masuk berhasil dihapus');
     }

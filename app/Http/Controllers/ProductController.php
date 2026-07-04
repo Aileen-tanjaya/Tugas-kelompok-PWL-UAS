@@ -10,14 +10,11 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    /**
-     * Menampilkan daftar barang (Mendukung Pencarian & Counter Statis)
-     */
+    //Menampilkan daftar barang
     public function index(): View
     {
         $query = Product::query();
 
-        // 1. Fitur Pencarian Mekanis menggunakan helper request() global (Menghindari parameter error)
         if (request()->has('search') && request()->search != '') {
             $search = request()->search;
             $query->where(function($q) use ($search) {
@@ -26,28 +23,22 @@ class ProductController extends Controller
             });
         }
 
-        // 2. Hitung Counter Secara Global dari Seluruh Database
         $totalBarang = Product::count();
         $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 5)->count();
         $stokHabis   = Product::where('stok', 0)->count();
 
-        // 3. Ambil data dengan Pagination + mengunci keyword pencarian di url pagination
         $products = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
         return view('products.index', compact('products', 'totalBarang', 'stokMenipis', 'stokHabis'));
     }
 
-    /**
-     * Form tambah barang
-     */
+    //Tambah Barang
     public function create(): View
     {
         return view('products.create');
     }
 
-    /**
-     * Simpan barang baru
-     */
+    //Simpan Barang Baru
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -69,17 +60,13 @@ class ProductController extends Controller
             ->with('success', 'Barang berhasil ditambahkan.');
     }
 
-    /**
-     * Form edit barang
-     */
+    //Edit Barang
     public function edit(Product $product): View
     {
         return view('products.edit', compact('product'));
     }
 
-    /**
-     * Update barang
-     */
+    //Update Barang
     public function update(Request $request, Product $product): RedirectResponse
     {
         $validated = $request->validate([
@@ -101,14 +88,32 @@ class ProductController extends Controller
             ->with('success', 'Barang berhasil diperbarui.');
     }
 
-    /**
-     * Hapus barang
-     */
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
 
         return Redirect::route('products.index')
             ->with('success', 'Barang berhasil dihapus.');
+    }
+
+    public function stok(): View
+    {
+        $query = Product::query();
+
+        if (request()->has('search') && request()->search != '') {
+            $search = request()->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_barang', 'like', '%' . $search . '%')
+                  ->orWhere('kode_barang', 'like', '%' . $search . '%');
+            });
+        }
+
+        $totalBarang = Product::count();
+        $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 5)->count();
+        $stokHabis   = Product::where('stok', 0)->count();
+
+        $products = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+        return view('stok.index', compact('products', 'totalBarang', 'stokMenipis', 'stokHabis'));
     }
 }

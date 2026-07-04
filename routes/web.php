@@ -77,28 +77,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Semua Menu Aplikasi (Hanya Bisa Diakses Setelah Login)
 Route::middleware(['auth'])->group(function () {
 
-    // User Management
+    // Manajemen Pengguna
     Route::resource('users', UserController::class)->except(['show']);
 
-    // Master Manajemen Barang
+    // Manajemen Barang
     Route::resource('products', ProductController::class);
 
-    // Master Manajemen Stok (Dialihkan menggunakan ProductController agar Tampilan Baru Aktif)
-    Route::get('/stok', [ProductController::class, 'index'])->name('stok.index');
-    Route::get('/stok/create', [ProductController::class, 'create'])->name('stok.create');
-    Route::post('/stok', [ProductController::class, 'store'])->name('stok.store');
-    Route::get('/stok/{product}/edit', [ProductController::class, 'edit'])->name('stok.edit');
-    Route::put('/stok/{product}', [ProductController::class, 'update'])->name('stok.update');
-    Route::delete('/stok/{product}', [ProductController::class, 'destroy'])->name('stok.destroy');
+    // Manajemen Stok
+    Route::get('/stok', [ProductController::class, 'stok'])->name('stok.index');
 
-    // Transaksi Stok Masuk
+    // Stok Masuk
     Route::get('/stok-masuk/search', [StokMasukController::class, 'search'])->name('stok_masuk.search');
     Route::resource('stok-masuk', StokMasukController::class)->names('stok_masuk');
 
-    // Transaksi Stok Keluar
+    // Stok Keluar
     Route::get('/stok-keluar/search', [StokKeluarController::class, 'search'])->name('stok_keluar.search');
     Route::resource('stok-keluar', StokKeluarController::class)->names('stok_keluar');
 });

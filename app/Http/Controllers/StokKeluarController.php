@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\StokKeluar; // Pastikan nama model sesuai dengan aplikasi Anda
+use App\Models\StokKeluar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,19 +11,17 @@ class StokKeluarController extends Controller
 {
     public function index()
     {
-        // Mengambil data stok keluar beserta relasi produknya
         $stokKeluars = StokKeluar::with('product')->latest()->paginate(10);
         return view('stok_keluar.index', compact('stokKeluars'));
     }
 
     public function create()
     {
-        // Ambil semua produk untuk pilihan di form dropdown
         $products = Product::all();
         return view('stok_keluar.create', compact('products'));
     }
 
-    public function store(Request $request)
+public function store(Request $request)
     {
         // 1. Validasi Input Data
         $request->validate([
@@ -34,16 +32,13 @@ class StokKeluarController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        // 2. Gunakan Database Transaction agar aman dan sinkron
-        DB::transaction(function () use ($request) {
-            $product = Product::findOrFail($request->product_id);
+        $product = Product::findOrFail($request->product_id);
+        
+        if ($product->stok < $request->jumlah) {
+            return back()->withErrors(['jumlah' => "Stok tidak mencukupi! Sisa stok saat ini hanya: {$product->stok}"])->withInput();
+        }
 
-            // Validasi apakah stok cukup sebelum dikurangi
-            if ($product->stok < $request->jumlah) {
-                throw new \Exception("Stok tidak mencukupi! Stok tersedia saat ini: {$product->stok}");
-            }
-
-            // Simpan data transaksi stok keluar
+        DB::transaction(function () use ($request, $product) {
             StokKeluar::create([
                 'product_id' => $request->product_id,
                 'jumlah'     => $request->jumlah,
@@ -52,11 +47,9 @@ class StokKeluarController extends Controller
                 'keterangan' => $request->keterangan,
             ]);
 
-            // Kurangi stok di tabel produk secara otomatis
             $product->decrement('stok', $request->jumlah);
         });
 
-        // 3. TULISAN SUKSES DI SINI SUDAH DIHAPUS TOTAL
         return redirect()->route('stok_keluar.index');
     }
 
@@ -66,13 +59,11 @@ class StokKeluarController extends Controller
             $stokKeluar = StokKeluar::findOrFail($id);
             $product = Product::findOrFail($stokKeluar->product_id);
 
-            // Kembalikan stok yang sempat dikurangi sebelum log dihapus
             $product->increment('stok', $stokKeluar->jumlah);
             
             $stokKeluar->delete();
         });
 
-        // TULISAN SUKSES DI SINI JUGA SUDAH DIHAPUS TOTAL
         return redirect()->route('stok_keluar.index');
     }
 }

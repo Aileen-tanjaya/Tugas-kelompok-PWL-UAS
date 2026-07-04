@@ -8,21 +8,13 @@ use Illuminate\View\View;
 
 class StokController extends Controller
 {
-    /**
-     * Menampilkan halaman Manajemen Stok
-     * (hanya daftar barang).
-     */
+
     public function index(): View
     {
         $products = Product::orderBy('id', 'desc')->paginate(10);
 
         return view('stok.index', compact('products'));
     }
-
-    /**
-     * Semua proses CRUD stok dipindahkan
-     * ke StokMasukController dan StokKeluarController.
-     */
 
     public function create()
     {

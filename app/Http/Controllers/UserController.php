@@ -68,7 +68,6 @@ class UserController extends Controller
     
     public function destroy(User $user)
     {
-        // Mencegah admin menghapus dirinya sendiri
         if (auth()->id() === $user->id) {
             return redirect()->route('users.index')->with('error', 'Anda tidak bisa menghapus akun sendiri!');
         }
