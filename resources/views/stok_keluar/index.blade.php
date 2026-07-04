@@ -1,18 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Riwayat Transaksi Stok Keluar') }}
+            {{ __('Data Stok Keluar') }}
         </h2>
     </x-slot>
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                    {{ session('success') }}
-                </div>
-            @endif
+            {{-- Bagian alert sukses/flash message sudah dihapus dari sini --}}
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 
@@ -40,7 +36,7 @@
                                 <th class="border px-4 py-2 text-left">Nama Barang</th>
                                 <th class="border px-4 py-2 text-left">Jumlah</th>
                                 <th class="border px-4 py-2 text-left">Satuan</th>
-                                <th class="border px-4 py-2 text-left">Keterangan</th>
+                                <th class="border px-4 py-2 text-left">Tujuan / Keperluan</th>
                                 <th class="border px-4 py-2 text-left">Aksi</th>
                             </tr>
                         </thead>
@@ -53,10 +49,11 @@
                                     <td class="border px-4 py-2">{{ $sk->product->nama_barang ?? 'Produk Dihapus' }}</td>
                                     <td class="border px-4 py-2 text-red-600 font-bold">-{{ $sk->jumlah }}</td>
                                     <td class="border px-4 py-2">{{ strtolower($sk->product->satuan ?? '-') }}</td>
-                                    <td class="border px-4 py-2">{{ $sk->tujuan }}</td>
-                                    <td class="border px-4 py-2">{{ $sk->keterangan ?? '-' }}</td>
+                                    
+                                    <td class="border px-4 py-2">{{ $sk->tujuan ?? '-' }}</td>
+                                    
                                     <td class="border px-4 py-2">
-                                        <form action="{{ route('stok_keluar.destroy', $sk->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus riwayat ini? Stok barang akan dikembalikan otomatis.')">
+                                        <form action="{{ route('stok_keluar.destroy', $sk->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus riwayat ini? Stok barang akan dikembangkan otomatis.')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" style="background: #dc2626 !important; color: white !important; padding: 5px 10px; border-radius: 3px; border: none; font-size: 14px; font-weight: bold; cursor: pointer;">
@@ -67,7 +64,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="border px-4 py-2 text-center">
+                                    <td colspan="8" class="border px-4 py-2 text-center">
                                         Belum ada data riwayat pengeluaran stok.
                                     </td>
                                 </tr>

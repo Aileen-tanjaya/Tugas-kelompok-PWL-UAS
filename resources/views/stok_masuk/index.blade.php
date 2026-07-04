@@ -1,18 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Riwayat Transaksi Stok Masuk') }}
+            {{ __('Data Stok Masuk') }}
         </h2>
     </x-slot>
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                    {{ session('success') }}
-                </div>
-            @endif
+            {{-- Bagian alert sukses/flash message sudah dihapus dari sini --}}
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 
@@ -40,7 +36,7 @@
                                 <th class="border px-4 py-2 text-left">Nama Barang</th>
                                 <th class="border px-4 py-2 text-left">Jumlah</th>
                                 <th class="border px-4 py-2 text-left">Satuan</th>
-                                <th class="border px-4 py-2 text-left">Keterangan</th>
+                                <th class="border px-4 py-2 text-left">Supplier</th>
                                 <th class="border px-4 py-2 text-left">Aksi</th>
                             </tr>
                         </thead>
@@ -53,7 +49,7 @@
                                     <td class="border px-4 py-2">{{ $stok->product->nama_barang ?? 'Produk Terhapus' }}</td>
                                     <td class="border px-4 py-2 text-green-600 font-bold">+{{ $stok->jumlah }}</td>
                                     <td class="border px-4 py-2">{{ strtolower($stok->product->satuan ?? '-') }}</td>
-                                    <td class="border px-4 py-2">{{ $stok->keterangan ?? '-' }}</td>
+                                    <td class="border px-4 py-2">{{ $stok->supplier ?? '-' }}</td>
                                     <td class="border px-4 py-2">
                                         <form action="{{ route('stok_masuk.destroy', $stok->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin hapus data ini? Stok barang akan otomatis dikurangi kembali.')">
                                             @csrf

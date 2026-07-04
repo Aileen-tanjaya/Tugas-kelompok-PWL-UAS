@@ -10,7 +10,7 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    //Menampilkan daftar barang
+    // Menampilkan daftar barang
     public function index(): View
     {
         $query = Product::query();
@@ -23,22 +23,24 @@ class ProductController extends Controller
             });
         }
 
+        // SINKRONISASI LOGIKA BARU + STOK AMAN
         $totalBarang = Product::count();
-        $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 5)->count();
-        $stokHabis   = Product::where('stok', 0)->count();
+        $stokAman    = Product::where('stok', '>', 2)->count();
+        $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 2)->count();
+        $stokHabis   = Product::where('stok', '<=', 0)->count();
 
         $products = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
-        return view('products.index', compact('products', 'totalBarang', 'stokMenipis', 'stokHabis'));
+        return view('products.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));
     }
 
-    //Tambah Barang
+    // Tambah Barang
     public function create(): View
     {
         return view('products.create');
     }
 
-    //Simpan Barang Baru
+    // Simpan Barang Baru
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -53,20 +55,19 @@ class ProductController extends Controller
             'nama_barang' => $validated['nama_barang'],
             'satuan'      => $validated['satuan'],
             'harga'       => $validated['harga'],
-            'stok'        => 0, // Default awal 0, bertambah lewat Stok Masuk
+            'stok'        => 0, 
         ]);
 
-        return Redirect::route('products.index')
-            ->with('success', 'Barang berhasil ditambahkan.');
+        return Redirect::route('products.index')->with('success', 'Barang berhasil ditambahkan.');
     }
 
-    //Edit Barang
+    // Edit Barang
     public function edit(Product $product): View
     {
         return view('products.edit', compact('product'));
     }
 
-    //Update Barang
+    // Update Barang
     public function update(Request $request, Product $product): RedirectResponse
     {
         $validated = $request->validate([
@@ -81,19 +82,16 @@ class ProductController extends Controller
             'nama_barang' => $validated['nama_barang'],
             'satuan'      => $validated['satuan'],
             'harga'       => $validated['harga'],
-            'stok'        => $product->stok, // Mempertahankan jumlah stok saat ini
+            'stok'        => $product->stok, 
         ]);
 
-        return Redirect::route('products.index')
-            ->with('success', 'Barang berhasil diperbarui.');
+        return Redirect::route('products.index')->with('success', 'Barang berhasil diperbarui.');
     }
 
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
-
-        return Redirect::route('products.index')
-            ->with('success', 'Barang berhasil dihapus.');
+        return Redirect::route('products.index')->with('success', 'Barang berhasil dihapus.');
     }
 
     public function stok(): View
@@ -108,12 +106,14 @@ class ProductController extends Controller
             });
         }
 
+        // SINKRONISASI LOGIKA BARU + STOK AMAN
         $totalBarang = Product::count();
-        $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 5)->count();
-        $stokHabis   = Product::where('stok', 0)->count();
+        $stokAman    = Product::where('stok', '>', 2)->count();
+        $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 2)->count();
+        $stokHabis   = Product::where('stok', '<=', 0)->count();
 
         $products = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
-        return view('stok.index', compact('products', 'totalBarang', 'stokMenipis', 'stokHabis'));
+        return view('stok.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));
     }
 }

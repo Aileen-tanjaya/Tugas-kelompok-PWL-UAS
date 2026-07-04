@@ -9,6 +9,8 @@ class StokMasuk extends Model
 {
     use HasFactory;
 
+    protected $table = 'stok_masuks';
+
     protected $fillable = [
         'product_id',
         'jumlah',
@@ -19,6 +21,6 @@ class StokMasuk extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

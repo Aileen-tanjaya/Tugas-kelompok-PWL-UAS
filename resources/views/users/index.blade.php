@@ -37,7 +37,7 @@
                             <th class="border px-4 py-2 text-left">Nama</th>
                             <th class="border px-4 py-2 text-left">Email</th>
                             <th class="border px-4 py-2 text-left">Role</th>
-                            <th class="border px-4 py-2 text-left">Aksi</th>
+                            <th class="border px-4 py-2 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,7 +47,7 @@
                                 <td class="border px-4 py-2">{{ $user->name }}</td>
                                 <td class="border px-4 py-2">{{ $user->email }}</td>
                                 <td class="border px-4 py-2">{{ $user->role }}</td>
-                                <td class="border px-4 py-2 flex gap-2">
+                                <td class="border px-4 py-2 flex justify-center gap-2">
                                     <a href="{{ route('users.edit', $user->id) }}" 
                                         style="background: orange !important; color: white !important; padding: 6px 12px !important; border-radius: 4px !important; text-decoration: none !important; font-size: 12px !important; font-weight: bold !important;">
                                         Edit
@@ -67,7 +67,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="border px-4 py-2 text-center">
+                                <td colspan="5" class="border px-4 py-2 text-center text-gray-500 italic">
                                     Belum ada data user.
                                 </td>
                             </tr>
@@ -81,5 +81,4 @@
             </div>
         </div>
     </div>
-</div>
 </x-app-layout>

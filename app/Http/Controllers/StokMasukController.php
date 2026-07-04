@@ -24,12 +24,12 @@ class StokMasukController extends Controller
 
     public function store(Request $request)
     {
+        // Keterangan dihapus, Supplier TETAP ADA
         $request->validate([
             'product_id' => 'required',
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric|min:1',
             'supplier' => 'required',
-            'keterangan' => 'nullable'
         ]);
 
         StokMasuk::create([
@@ -37,7 +37,6 @@ class StokMasukController extends Controller
             'tanggal' => $request->tanggal,
             'jumlah' => $request->jumlah,
             'supplier' => $request->supplier,
-            'keterangan' => $request->keterangan,
         ]);
 
         $product = Product::find($request->product_id);
@@ -62,12 +61,12 @@ class StokMasukController extends Controller
 
     public function update(Request $request, StokMasuk $stokMasuk)
     {
+        // Keterangan dihapus, Supplier TETAP ADA
         $request->validate([
             'product_id' => 'required',
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric|min:1',
             'supplier' => 'required',
-            'keterangan' => 'nullable'
         ]);
 
         $produkLama = Product::find($stokMasuk->product_id);
@@ -83,7 +82,6 @@ class StokMasukController extends Controller
             'tanggal' => $request->tanggal,
             'jumlah' => $request->jumlah,
             'supplier' => $request->supplier,
-            'keterangan' => $request->keterangan,
         ]);
 
         return redirect()->route('stok_masuk.index')

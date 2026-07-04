@@ -12,30 +12,49 @@
                 
                 <h3 class="text-lg font-bold mb-4">Daftar Stok Barang</h3>
 
-                <form action="{{ route('stok.index') }}" method="GET" class="mb-5">
-                    <div class="relative w-full">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                <form action="{{ route('stok.index') }}" method="GET" class="mb-6">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute pointer-events-none flex items-center justify-center" 
+                             style="top: 50%; transform: translateY(-50%); left: 16px; height: auto; width: auto;">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
-                        </span>
-                        <input type="text" name="search" value="{{ request('search') }}" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cari kode atau nama barang...">
+                        </div>
+                        
+                        <input type="text" 
+                               name="search" 
+                               value="{{ request('search') }}" 
+                               class="w-full pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" 
+                               style="padding-left: 52px !important;"
+                               placeholder="Cari kode atau nama barang...">
                     </div>
                 </form>
 
-                <div class="flex flex-wrap gap-3 justify-center mb-6">
-                    <span class="bg-blue-600 text-white px-5 py-1.5 rounded text-sm font-semibold shadow-sm">
+                <div style="display: flex !important; flex-direction: row !important; justify-content: center !important; align-items: center !important; gap: 24px !important; margin-top: 24px !important; margin-bottom: 16px !important; width: 100% !important;">
+                    
+                    <div class="bg-blue-600 text-white px-5 py-1.5 rounded text-sm font-semibold shadow-sm text-center" 
+                         style="min-width: 120px !important; display: block !important;">
                         Total: {{ $totalBarang }}
-                    </span>
-                    <span class="bg-yellow-500 text-white px-5 py-1.5 rounded text-sm font-semibold shadow-sm">
+                    </div>
+                    
+                    <div class="text-white px-5 py-1.5 rounded text-sm font-semibold shadow-sm text-center" 
+                         style="background-color: #22c55e !important; min-width: 120px !important; display: block !important;">
+                        Aman: {{ $stokAman }}
+                    </div>
+                    
+                    <div class="text-white px-5 py-1.5 rounded text-sm font-semibold shadow-sm text-center" 
+                         style="background-color: #eab308 !important; min-width: 120px !important; display: block !important;">
                         Menipis: {{ $stokMenipis }}
-                    </span>
-                    <span class="bg-red-600 text-white px-5 py-1.5 rounded text-sm font-semibold shadow-sm">
+                    </div>
+                    
+                    <div class="bg-red-600 text-white px-5 py-1.5 rounded text-sm font-semibold shadow-sm text-center" 
+                         style="min-width: 120px !important; display: block !important;">
                         Habis: {{ $stokHabis }}
-                    </span>
+                    </div>
+
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto mt-2">
                     <table class="w-full border border-gray-300">
                         <thead class="bg-gray-100">
                             <tr>
@@ -53,8 +72,8 @@
                                     <td class="border px-4 py-2 text-center">
                                         {{ method_exists($products, 'firstItem') ? ($products->firstItem() + $key) : ($key + 1) }}
                                     </td>
-                                    <td class="border px-4 py-2">{{ $product->kode_barang }}</td>
-                                    <td class="border px-4 py-2">{{ $product->nama_barang }}</td>
+                                    <td class="border px-4 py-2 font-mono font-bold text-gray-600">{{ $product->kode_barang }}</td>
+                                    <td class="border px-4 py-2 font-medium">{{ $product->nama_barang }}</td>
                                     <td class="border px-4 py-2 text-center">
                                         @php
                                             $satuan = strtolower($product->satuan ?? 'pcs');
@@ -67,16 +86,18 @@
                                         {{ $product->stok }}
                                     </td>
                                     <td class="border px-4 py-2 text-center">
-                                        @if($product->stok == 0)
-                                            <span class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold block text-center">
+                                        @if($product->stok <= 0)
+                                            <span class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold block text-center shadow-sm">
                                                 HABIS
                                             </span>
-                                        @elseif($product->stok <= 5)
-                                            <span class="bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold block text-center">
+                                        @elseif($product->stok > 0 && $product->stok <= 2)
+                                            <span class="text-white px-3 py-1 rounded text-xs font-bold block text-center shadow-sm" 
+                                                  style="background-color: #eab308 !important;">
                                                 MENIPIS
                                             </span>
                                         @else
-                                            <span class="bg-green-500 text-white px-3 py-1 rounded text-xs font-bold block text-center">
+                                            <span class="text-white px-3 py-1 rounded text-xs font-bold block text-center shadow-sm" 
+                                                  style="background-color: #22c55e !important;">
                                                 Aman
                                             </span>
                                         @endif
@@ -84,7 +105,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="border px-4 py-2 text-center text-gray-500">
+                                    <td colspan="6" class="border px-4 py-2 text-center text-gray-500 italic">
                                         Data barang tidak ditemukan.
                                     </td>
                                 </tr>

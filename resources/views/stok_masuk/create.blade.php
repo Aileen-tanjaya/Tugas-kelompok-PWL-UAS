@@ -56,8 +56,8 @@
                         </div>
 
                         <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-1">Keterangan (Opsional)</label>
-                            <textarea name="keterangan" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" placeholder="Tambahkan catatan jika perlu (misal: Barang dari gudang pusat)...">{{ old('keterangan') }}</textarea>
+                            <label class="block text-gray-700 text-sm font-bold mb-1">Supplier / Asal Barang <span class="text-red-500">*</span></label>
+                            <input type="text" name="supplier" value="{{ old('supplier') }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" placeholder="Masukkan nama PT / Supplier / Produksi Sendiri" required>
                         </div>
                     </div>
 
