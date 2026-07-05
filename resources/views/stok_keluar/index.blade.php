@@ -36,7 +36,6 @@
                                 <th class="border px-4 py-2 text-left">Nama Barang</th>
                                 <th class="border px-4 py-2 text-left">Jumlah</th>
                                 <th class="border px-4 py-2 text-left">Satuan</th>
-                                <th class="border px-4 py-2 text-left">Tujuan / Keperluan</th>
                                 <th class="border px-4 py-2 text-left">Aksi</th>
                             </tr>
                         </thead>
@@ -50,8 +49,6 @@
                                     <td class="border px-4 py-2 text-red-600 font-bold">-{{ $sk->jumlah }}</td>
                                     <td class="border px-4 py-2">{{ strtolower($sk->product->satuan ?? '-') }}</td>
                                     
-                                    <td class="border px-4 py-2">{{ $sk->tujuan ?? '-' }}</td>
-                                    
                                     <td class="border px-4 py-2">
                                         <form action="{{ route('stok_keluar.destroy', $sk->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus riwayat ini? Stok barang akan dikembangkan otomatis.')">
                                             @csrf
@@ -64,7 +61,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="border px-4 py-2 text-center">
+                                    <td colspan="7" class="border px-4 py-2 text-center">
                                         Belum ada data riwayat pengeluaran stok.
                                     </td>
                                 </tr>

@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StokMasukController;
 use App\Http\Controllers\StokKeluarController;
+use App\Http\Controllers\StokController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,17 +23,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Login
+// Login (Tampilan)
 Route::get('/login', function () {
     return view('auth.login');
 })->middleware('guest')->name('login');
 
+// Proses Login
 Route::post('/login', function (Request $request) {
     $request->validate([
         'email' => ['required', 'email'],
         'password' => ['required'],
     ]);
 
+    // 1. Otomatis buat akun ADMIN jika belum ada di database
     if ($request->email == 'admin@gmail.com') {
         $user = User::where('email', 'admin@gmail.com')->first();
 
@@ -50,8 +53,25 @@ Route::post('/login', function (Request $request) {
         return redirect('/dashboard');
     }
 
+    // 2. Otomatis buat akun USER jika belum ada di database
+    if ($request->email == 'user@gmail.com') {
+        $user = User::where('email', 'user@gmail.com')->first();
+
+        if (!$user) {
+            User::create([
+                'name' => 'User Biasa',
+                'email' => 'user@gmail.com',
+                'password' => Hash::make($request->password),
+                'role' => 'user', 
+            ]);
+        }
+    }
+
+    // 3. Proses login resmi Laravel
     if (Auth::attempt($request->only('email', 'password'))) {
         $request->session()->regenerate();
+        
+        // PERBAIKAN: Semua pengguna langsung diarahkan masuk ke Dashboard
         return redirect('/dashboard');
     }
 
@@ -62,11 +82,11 @@ Route::post('/login', function (Request $request) {
 
 // Dashboard
 Route::get('/dashboard', function () {    
-
     if (Auth::user()->role === 'admin') {
         return view('admin.dashboard'); 
     }
     
+    // PERBAIKAN: User biasa sekarang diizinkan melihat halaman dashboard standar
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -86,7 +106,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('products', ProductController::class);
 
     // Manajemen Stok
-    Route::get('/stok', [ProductController::class, 'stok'])->name('stok.index');
+    Route::get('/stok', [StokController::class, 'index'])->name('stok.index');
 
     // Stok Masuk
     Route::get('/stok-masuk/search', [StokMasukController::class, 'search'])->name('stok_masuk.search');
@@ -105,4 +125,5 @@ Route::post('/logout', function (Request $request) {
     return redirect('/login');
 })->middleware('auth')->name('logout');
 
-require __DIR__ . '/auth.php';
+// Menghapus/mengomentari auth.php agar rute login custom di atas tidak ditimpa oleh Laravel Breeze
+// require __DIR__ . '/auth.php';

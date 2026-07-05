@@ -29,7 +29,8 @@ class ProductController extends Controller
         $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 2)->count();
         $stokHabis   = Product::where('stok', '<=', 0)->count();
 
-        $products = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+        // PERBAIKAN: Mengubah paginate(10) menjadi get() agar tampil semua dalam 1 halaman
+        $products = $query->orderBy('id', 'desc')->get();
 
         return view('products.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));
     }
@@ -112,7 +113,8 @@ class ProductController extends Controller
         $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 2)->count();
         $stokHabis   = Product::where('stok', '<=', 0)->count();
 
-        $products = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+        // PERBAIKAN: Mengubah paginate(10) menjadi get() agar halaman Manajemen Stok tampil utuh
+        $products = $query->orderBy('id', 'desc')->get();
 
         return view('stok.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));
     }

@@ -48,7 +48,7 @@
                             @forelse($products as $key => $product)
                                 <tr>
                                     <td class="border px-4 py-2">
-                                        {{ method_exists($products, 'firstItem') ? ($products->firstItem() + $key) : ($key + 1) }}
+                                        {{ $key + 1 }}
                                     </td>
                                     <td class="border px-4 py-2 font-mono font-bold text-gray-600">
                                         {{ $product->kode_barang }}
@@ -97,13 +97,7 @@
                     </table>
                 </div>
 
-                @if(method_exists($products, 'links'))
-                    <div class="mt-4">
-                        {{ $products->links() }}
-                    </div>
-                @endif
-
-            </div>
+                </div>
         </div>
     </div>
 </x-app-layout>

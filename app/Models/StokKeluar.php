@@ -13,8 +13,6 @@ class StokKeluar extends Model
         'product_id',
         'jumlah',
         'tanggal',
-        'tujuan',
-        'keterangan',
     ];
 
     public function product()

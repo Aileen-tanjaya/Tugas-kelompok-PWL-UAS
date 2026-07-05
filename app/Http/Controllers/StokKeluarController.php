@@ -28,8 +28,6 @@ public function store(Request $request)
             'product_id' => 'required|exists:products,id',
             'jumlah'     => 'required|integer|min:1',
             'tanggal'    => 'required|date',
-            'tujuan'     => 'required|string|max:255',
-            'keterangan' => 'nullable|string',
         ]);
 
         $product = Product::findOrFail($request->product_id);
@@ -43,8 +41,6 @@ public function store(Request $request)
                 'product_id' => $request->product_id,
                 'jumlah'     => $request->jumlah,
                 'tanggal'    => $request->tanggal,
-                'tujuan'     => $request->tujuan,
-                'keterangan' => $request->keterangan,
             ]);
 
             $product->decrement('stok', $request->jumlah);

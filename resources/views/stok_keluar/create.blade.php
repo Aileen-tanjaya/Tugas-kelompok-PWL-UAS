@@ -55,16 +55,7 @@
                             </div>
                         </div>
 
-                        <div>
-                            <label for="tujuan" class="block text-gray-700 text-sm font-bold mb-1">Tujuan / Alasan <span class="text-red-500">*</span></label>
-                            <input type="text" name="tujuan" id="tujuan" value="{{ old('tujuan') }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" placeholder="Contoh: Terjual, Rusak, Dipakai Divisi A" required>
                         </div>
-
-                        <div>
-                            <label for="keterangan" class="block text-gray-700 text-sm font-bold mb-1">Keterangan (Opsional)</label>
-                            <textarea name="keterangan" id="keterangan" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" placeholder="Tambahkan catatan jika perlu...">{{ old('keterangan') }}</textarea>
-                        </div>
-                    </div>
 
                     <div class="flex justify-end items-center gap-3 mt-6 pt-5 border-t border-gray-200">
                         <a href="{{ route('stok_keluar.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-5 py-2 rounded-lg text-sm transition shadow-sm">

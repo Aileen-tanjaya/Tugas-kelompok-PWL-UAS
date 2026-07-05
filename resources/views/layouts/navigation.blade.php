@@ -17,17 +17,20 @@
                         <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                             {{ __('Manajemen Pengguna') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                            {{ __('Manajemen Barang') }}
-                        </x-nav-link>
                     @endif
+
+                    <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+                        {{ __('Manajemen Barang') }}
+                    </x-nav-link>
 
                     <x-nav-link :href="route('stok.index')" :active="request()->routeIs('stok.*')">
                         {{ __('Manajemen Stok') }}
                     </x-nav-link>
+                    
                     <x-nav-link :href="route('stok_masuk.index')" :active="request()->routeIs('stok_masuk.*')">
                         {{ __('Stok Masuk') }}
                     </x-nav-link>
+                    
                     <x-nav-link :href="route('stok_keluar.index')" :active="request()->routeIs('stok_keluar.*')">
                         {{ __('Stok Keluar') }}
                     </x-nav-link>
@@ -86,17 +89,20 @@
                 <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                     {{ __('Manajemen Pengguna') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                    {{ __('Manajemen Barang') }}
-                </x-responsive-nav-link>
             @endif
+
+            <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+                {{ __('Manajemen Barang') }}
+            </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('stok.index')" :active="request()->routeIs('stok.*')">
                 {{ __('📦 Manajemen Stok') }}
             </x-responsive-nav-link>
+            
             <x-responsive-nav-link :href="route('stok_masuk.index')" :active="request()->routeIs('stok_masuk.*')">
                 {{ __('📥 Stok Masuk') }}
             </x-responsive-nav-link>
+            
             <x-responsive-nav-link :href="route('stok_keluar.index')" :active="request()->routeIs('stok_keluar.*')">
                 {{ __('📤 Stok Keluar') }}
             </x-responsive-nav-link>
