@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\StokKeluar;
+use App\Models\StokMasuk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,7 +12,7 @@ class StokKeluarController extends Controller
 {
     public function index()
     {
-        // SUDAH DIUBAH: Menggunakan get() agar langsung tampil semua data dalam 1 halaman
+        // Tampilkan semua data stok keluar
         $stokKeluars = StokKeluar::with('product')->latest()->get();
         return view('stok_keluar.index', compact('stokKeluars'));
     }
@@ -19,6 +20,16 @@ class StokKeluarController extends Controller
     public function create()
     {
         $products = Product::all();
+
+        // FIX TOTAL: Hitung otomatis sisa stok berdasarkan laporan real-time untuk dropdown
+        foreach ($products as $product) {
+            $totalMasuk = StokMasuk::where('product_id', $product->id)->sum('jumlah');
+            $totalKeluar = StokKeluar::where('product_id', $product->id)->sum('jumlah');
+            
+            // Masukkan hasil kalkulasi ke properti sisa_stok_report yang dipanggil oleh file blade
+            $product->sisa_stok_report = $totalMasuk - $totalKeluar;
+        }
+
         return view('stok_keluar.create', compact('products'));
     }
 
@@ -31,36 +42,31 @@ class StokKeluarController extends Controller
             'tanggal'    => 'required|date',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        // 2. Hitung sisa stok real-time untuk validasi input sebelum disimpan
+        $totalMasuk = StokMasuk::where('product_id', $request->product_id)->sum('jumlah');
+        $totalKeluar = StokKeluar::where('product_id', $request->product_id)->sum('jumlah');
+        $sisaStokRealTime = $totalMasuk - $totalKeluar;
         
-        if ($product->stok < $request->jumlah) {
-            return back()->withErrors(['jumlah' => "Stok tidak mencukupi! Sisa stok saat ini hanya: {$product->stok}"])->withInput();
+        // Cek jika jumlah yang dikeluarkan melebihi stok yang ada di report masuk
+        if ($sisaStokRealTime < $request->jumlah) {
+            return back()->withErrors(['jumlah' => "Stok tidak mencukupi! Sisa stok saat ini hanya: {$sisaStokRealTime}"])->withInput();
         }
 
-        DB::transaction(function () use ($request, $product) {
-            StokKeluar::create([
-                'product_id' => $request->product_id,
-                'jumlah'     => $request->jumlah,
-                'tanggal'    => $request->tanggal,
-            ]);
+        // 3. Simpan data transaksi stok keluar
+        StokKeluar::create([
+            'product_id' => $request->product_id,
+            'jumlah'     => $request->jumlah,
+            'tanggal'    => $request->tanggal,
+        ]);
 
-            $product->decrement('stok', $request->jumlah);
-        });
-
-        return redirect()->route('stok_keluar.index');
+        return redirect()->route('stok_keluar.index')->with('success', 'Stok keluar berhasil dicatat.');
     }
 
     public function destroy($id)
     {
-        DB::transaction(function () use ($id) {
-            $stokKeluar = StokKeluar::findOrFail($id);
-            $product = Product::findOrFail($stokKeluar->product_id);
+        $stokKeluar = StokKeluar::findOrFail($id);
+        $stokKeluar->delete();
 
-            $product->increment('stok', $stokKeluar->jumlah);
-            
-            $stokKeluar->delete();
-        });
-
-        return redirect()->route('stok_keluar.index');
+        return redirect()->route('stok_keluar.index')->with('success', 'Catatan stok keluar berhasil dihapus.');
     }
 }

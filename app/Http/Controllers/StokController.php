@@ -3,52 +3,63 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class StokController extends Controller
 {
-    public function index(): View
+    // Mengubah nama fungsi agar tidak bentrok dengan Controller induk bawaan
+    public function tampilkanStok(Request $request)
     {
-        // 1. Mulai Query Dasar Model Product
-        $query = Product::query();
+        // 1. Ambil semua produk - DITAMBAHKAN URUTAN TERBARU DI ATAS (orderBy)
+        $query = Product::query()->orderBy('id', 'desc');
 
-        // 2. Filter Status
-        if (request()->filled('status')) {
-            $status = request('status');
-            
-            if ($status === 'aman') {
-                $query->where('stok', '>', 2);
-            } elseif ($status === 'menipis') {
-                $query->where('stok', '>', 0)->where('stok', '<=', 2);
-            } elseif ($status === 'habis') {
-                $query->where('stok', '<=', 0);
-            }
+        if ($request->has('search') && $request->search != '') {
+            $query->where('kode_barang', 'like', '%' . $request->search . '%')
+                  ->orWhere('nama_barang', 'like', '%' . $request->search . '%');
         }
 
-        // 3. Filter Pencarian Nama atau Kode Barang
-        if (request()->filled('search')) {
-            $search = request('search');
-            $query->where(function($q) use ($search) {
-                $q->where('nama_barang', 'like', '%' . $search . '%')
-                  ->orWhere('kode_barang', 'like', '%' . $search . '%');
+        $allProducts = $query->get();
+
+        // 2. Pasangkan hitungan report real-time ke setiap produk
+        foreach ($allProducts as $product) {
+            $product->calculated_stok = $product->sisa_stok_report;
+        }
+
+        // 3. Filter berdasarkan Status Dropdown (jika dipilih)
+        if ($request->has('status') && $request->status != '') {
+            $allProducts = $allProducts->filter(function ($product) use ($request) {
+                if ($request->status == 'habis') {
+                    return $product->calculated_stok <= 0;
+                } elseif ($request->status == 'menipis') {
+                    return $product->calculated_stok > 0 && $product->calculated_stok <= 2;
+                } elseif ($request->status == 'aman') {
+                    return $product->calculated_stok > 2;
+                }
+                return true;
             });
         }
 
-        // 4. Hitung Statistik Kotak Atas (Tetap Akurat)
-        $totalBarang = Product::count();
-        $stokAman    = Product::where('stok', '>', 2)->count();
-        $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 2)->count();
-        $stokHabis   = Product::where('stok', '<=', 0)->count();
+        // 4. HITUNG STATISTIK KOTAK (Aman, Menipis, Habis) secara live report
+        $productsForBadges = Product::all();
+        $totalBarang = $productsForBadges->count();
+        $stokAman = 0;
+        $stokMenipis = 0;
+        $stokHabis = 0;
 
-        // 5. PERBAIKAN: Mengubah paginate(10) menjadi get() agar tampil semua data dalam 1 halaman
-        $products = $query->orderBy('id', 'desc')->get();
+        foreach ($productsForBadges as $p) {
+            $current = $p->sisa_stok_report;
+            if ($current <= 0) {
+                $stokHabis++;
+            } elseif ($current > 0 && $current <= 2) {
+                $stokMenipis++;
+            } else {
+                $stokAman++;
+            }
+        }
+
+        // Kirim data ke view index manajemen stok
+        $products = $allProducts;
 
         return view('stok.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));
     }
-
-    public function create() { return redirect()->route('stok.index'); }
-    public function store() { return redirect()->route('stok.index'); }
-    public function edit($id) { return redirect()->route('stok.index'); }
-    public function update($id) { return redirect()->route('stok.index'); }
-    public function destroy($id) { return redirect()->route('stok.index'); }
 }

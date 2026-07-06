@@ -83,6 +83,10 @@
                         </thead>
                         <tbody>
                             @forelse($products as $key => $product)
+                                @php
+                                    // SINKRONISASI REAL-TIME: Mengambil hasil manipulasi variabel calculated_stok dari controller
+                                    $angkaStok = $product->calculated_stok ?? 0;
+                                @endphp
                                 <tr>
                                     <td class="border px-4 py-2 text-center">
                                         {{ $key + 1 }}
@@ -95,20 +99,20 @@
                                         </span>
                                     </td>
                                     <td class="border px-4 py-2 text-center font-bold">
-                                        {{ $product->stok }}
+                                        {{ $angkaStok }}
                                     </td>
                                     <td class="border px-4 py-2 text-center">
-                                        @if($product->stok <= 0)
+                                        @if($angkaStok <= 0)
                                             <span class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold block text-center shadow-sm">
                                                 HABIS
                                             </span>
-                                        @elseif($product->stok > 0 && $product->stok <= 2)
+                                        @elseif($angkaStok > 0 && $angkaStok <= 2)
                                             <span class="text-white px-3 py-1 rounded text-xs font-bold block text-center shadow-sm" style="background-color: #eab308 !important;">
                                                 MENIPIS
                                             </span>
                                         @else
                                             <span class="text-white px-3 py-1 rounded text-xs font-bold block text-center shadow-sm" style="background-color: #22c55e !important;">
-                                                Aman
+                                                AMAN
                                             </span>
                                         @endif
                                     </td>
@@ -124,7 +128,7 @@
                     </table>
                 </div>
 
-                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

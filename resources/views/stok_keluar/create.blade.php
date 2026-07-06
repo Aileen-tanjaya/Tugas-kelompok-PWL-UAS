@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-md sm:rounded-lg overflow-hidden p-6 border border-gray-100">
+            <div class="bg-white shadow-md sm:rounded-lg overflow-hidden p-6 border border-gray-200">
                 
                 <div class="border-b border-gray-200 pb-4 mb-6">
                     <h3 class="text-lg font-bold text-gray-800">
@@ -35,8 +35,9 @@
                                 <option value="">-- Silakan Pilih Barang --</option>
                                 @if(isset($products) && count($products) > 0)
                                     @foreach($products as $product)
+                                        {{-- FIX TERAKHIR: Menampilkan sisa stok kalkulasi report real-time dari controller --}}
                                         <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
-                                            [{{ $product->kode_barang }}] - {{ $product->nama_barang }} (Sisa Stok: {{ $product->stok }})
+                                            [{{ $product->kode_barang }}] - {{ $product->nama_barang }} (Sisa Stok: {{ $product->sisa_stok_report ?? 0 }})
                                         </option>
                                     @endforeach
                                 @endif
@@ -54,8 +55,7 @@
                                 <input type="date" name="tanggal" id="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" required>
                             </div>
                         </div>
-
-                        </div>
+                    </div>
 
                     <div class="flex justify-end items-center gap-3 mt-6 pt-5 border-t border-gray-200">
                         <a href="{{ route('stok_keluar.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-5 py-2 rounded-lg text-sm transition shadow-sm">

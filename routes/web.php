@@ -105,8 +105,8 @@ Route::middleware(['auth'])->group(function () {
     // Manajemen Barang
     Route::resource('products', ProductController::class);
 
-    // Manajemen Stok
-    Route::get('/stok', [StokController::class, 'index'])->name('stok.index');
+    // FIX TERAKHIR: Mengarahkan index ke method tampilkanStok agar tidak bentrok dengan class Controller utama Laravel
+    Route::get('/stok', [StokController::class, 'tampilkanStok'])->name('stok.index');
 
     // Stok Masuk
     Route::get('/stok-masuk/search', [StokMasukController::class, 'search'])->name('stok_masuk.search');

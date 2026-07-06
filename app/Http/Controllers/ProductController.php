@@ -23,14 +23,31 @@ class ProductController extends Controller
             });
         }
 
-        // SINKRONISASI LOGIKA BARU + STOK AMAN
-        $totalBarang = Product::count();
-        $stokAman    = Product::where('stok', '>', 2)->count();
-        $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 2)->count();
-        $stokHabis   = Product::where('stok', '<=', 0)->count();
-
-        // PERBAIKAN: Mengubah paginate(10) menjadi get() agar tampil semua dalam 1 halaman
+        // Tampil semua urut berdasarkan id terbaru
         $products = $query->orderBy('id', 'desc')->get();
+
+        // SINKRONISASI LOGIKA REAL-TIME: Pasang hasil hitungan (Masuk - Keluar) ke masing-masing produk
+        foreach ($products as $product) {
+            $product->calculated_stok = $product->sisa_stok_report;
+        }
+
+        // HITUNG STATISTIK KOTAK SECARA LIVE REPORT (Aman, Menipis, Habis)
+        $productsForBadges = Product::all();
+        $totalBarang = $productsForBadges->count();
+        $stokAman = 0;
+        $stokMenipis = 0;
+        $stokHabis = 0;
+
+        foreach ($productsForBadges as $p) {
+            $current = $p->sisa_stok_report;
+            if ($current <= 0) {
+                $stokHabis++;
+            } elseif ($current > 0 && $current <= 2) {
+                $stokMenipis++;
+            } else {
+                $stokAman++;
+            }
+        }
 
         return view('products.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));
     }
@@ -51,13 +68,15 @@ class ProductController extends Controller
             'harga'       => 'required|numeric|min:0',
         ]);
 
+        // Simpan data produk ke tabel products
         Product::create([
             'kode_barang' => $validated['kode_barang'],
             'nama_barang' => $validated['nama_barang'],
             'satuan'      => $validated['satuan'],
             'harga'       => $validated['harga'],
-            'stok'        => 0, 
         ]);
+
+        // Catatan: Pembuatan stok default '0' dihapus karena stok sekarang dihitung live dari riwayat transaksi masuk & keluar.
 
         return Redirect::route('products.index')->with('success', 'Barang berhasil ditambahkan.');
     }
@@ -83,39 +102,19 @@ class ProductController extends Controller
             'nama_barang' => $validated['nama_barang'],
             'satuan'      => $validated['satuan'],
             'harga'       => $validated['harga'],
-            'stok'        => $product->stok, 
         ]);
 
         return Redirect::route('products.index')->with('success', 'Barang berhasil diperbarui.');
     }
 
+    // Hapus Barang
     public function destroy(Product $product): RedirectResponse
     {
+        // Menghapus data riwayat transaksi terkait agar tidak error foreign key
+        $product->stokMasuks()->delete();
+        $product->stokKeluars()->delete();
         $product->delete();
+        
         return Redirect::route('products.index')->with('success', 'Barang berhasil dihapus.');
-    }
-
-    public function stok(): View
-    {
-        $query = Product::query();
-
-        if (request()->has('search') && request()->search != '') {
-            $search = request()->search;
-            $query->where(function($q) use ($search) {
-                $q->where('nama_barang', 'like', '%' . $search . '%')
-                  ->orWhere('kode_barang', 'like', '%' . $search . '%');
-            });
-        }
-
-        // SINKRONISASI LOGIKA BARU + STOK AMAN
-        $totalBarang = Product::count();
-        $stokAman    = Product::where('stok', '>', 2)->count();
-        $stokMenipis = Product::where('stok', '>', 0)->where('stok', '<=', 2)->count();
-        $stokHabis   = Product::where('stok', '<=', 0)->count();
-
-        // PERBAIKAN: Mengubah paginate(10) menjadi get() agar halaman Manajemen Stok tampil utuh
-        $products = $query->orderBy('id', 'desc')->get();
-
-        return view('stok.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));
     }
 }
