@@ -84,7 +84,6 @@
                         <tbody>
                             @forelse($products as $key => $product)
                                 @php
-                                    // SINKRONISASI REAL-TIME: Mengambil hasil manipulasi variabel calculated_stok dari controller
                                     $angkaStok = $product->calculated_stok ?? 0;
                                 @endphp
                                 <tr>

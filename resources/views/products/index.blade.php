@@ -34,70 +34,49 @@
 
                 <div class="overflow-x-auto">
                     <table class="w-full border border-gray-300">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="border px-4 py-2 text-left">No</th>
-                                <th class="border px-4 py-2 text-left">Kode</th>
-                                <th class="border px-4 py-2 text-left">Nama Barang</th>
-                                <th class="border px-4 py-2 text-left">Satuan</th>
-                                <th class="border px-4 py-2 text-left">Harga</th>
-                                <th class="border px-4 py-2 text-left">Dibuat Oleh</th>
-                                <th class="border px-4 py-2 text-left">Terakhir Diubah</th>
-                                <th class="border px-4 py-2 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($products as $key => $product)
-                                <tr>
-                                    <td class="border px-4 py-2 font-bold">
-                                        Rp {{ number_format($product->harga ?? 0, 0, ',', '.') }}
-                                    </td>
-
-                                    <td class="border px-4 py-2 text-xs text-gray-600">
-                                        {{ $product->pembuat->name ?? 'Admin' }}
-                                    </td>
-                                    <td class="border px-4 py-2 text-xs text-gray-600">
-                                        {{ $product->pengubah->name ?? '-' }}
-                                    </td>
-
-                                    <td class="border px-4 py-2 flex justify-center gap-2">
-                                        @php
-                                            $satuan = strtolower($product->satuan ?? 'pcs');
-                                        @endphp
-                                        <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold tracking-wide" 
-                                             style="background-color: #f3f4f6 !important; color: #4b5563 !important;">
-                                            <span>{{ $satuan }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="border px-4 py-2 font-bold">
-                                        Rp {{ number_format($product->harga ?? 0, 0, ',', '.') }}
-                                    </td>
-                                    <td class="border px-4 py-2 flex justify-center gap-2">
-                                        <a href="{{ route('products.edit', $product->id) }}" 
-                                            style="background: orange !important; color: white !important; padding: 6px 12px !important; border-radius: 4px !important; text-decoration: none !important; font-size: 12px !important; font-weight: bold !important;">
-                                            Edit
-                                        </a>
-
-                                        <form action="{{ route('products.destroy', $product->id) }}" 
-                                              method="POST" 
-                                              class="inline-block"
-                                              onsubmit="return confirm('Hapus produk ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" style="background: #dc2626 !important; color: white !important; padding: 5px 10px; border-radius: 3px; border: none; font-size: 14px; font-weight: bold; cursor: pointer;">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8" class="border px-4 py-2 text-center text-gray-500 italic">
-                                                Data barang tidak ditemukan.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                        </tbody>
+                    <thead class="bg-gray-100">
+                <tr>
+                    <th class="border px-4 py-2 text-left">No</th>
+                    <th class="border px-4 py-2 text-left">Kode</th>
+                    <th class="border px-4 py-2 text-left">Nama Barang</th>
+                    <th class="border px-4 py-2 text-left">Satuan</th>
+                    <th class="border px-4 py-2 text-left">Harga</th>
+                    <th class="border px-4 py-2 text-left">Dibuat Oleh</th>
+                    <th class="border px-4 py-2 text-left">Terakhir Diubah</th>
+                    <th class="border px-4 py-2 text-center">Aksi</th>
+                </tr>
+        </thead>
+        <tbody>
+            @forelse($products as $key => $product)
+                <tr>
+                    <td class="border px-4 py-2">{{ $key + 1 }}</td>
+                    <td class="border px-4 py-2 font-mono font-bold text-gray-600">{{ $product->kode_barang }}</td>
+                    <td class="border px-4 py-2 font-medium">{{ $product->nama_barang }}</td>
+                    <td class="border px-4 py-2">
+                        @php $satuan = strtolower($product->satuan ?? 'pcs'); @endphp
+                        <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                            {{ $satuan }}
+                        </div>
+                    </td>
+            <td class="border px-4 py-2 font-bold">Rp {{ number_format($product->harga ?? 0, 0, ',', '.') }}</td>
+            
+            <td class="border px-4 py-2 text-xs text-gray-600">{{ $product->pembuat->name ?? 'Admin' }}</td>
+            <td class="border px-4 py-2 text-xs text-gray-600">{{ $product->pengubah->name ?? '-' }}</td>
+            
+            <td class="border px-4 py-2 flex justify-center gap-2">
+                <a href="{{ route('products.edit', $product->id) }}" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-xs font-bold">Edit</a>
+                <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Hapus produk ini?')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold">Hapus</button>
+                </form>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="8" class="border px-4 py-2 text-center text-gray-500 italic">Data barang tidak ditemukan.</td>
+        </tr>
+    @endforelse
+</tbody>
                     </table>
                 </div>
 

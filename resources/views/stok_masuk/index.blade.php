@@ -7,9 +7,6 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            {{-- Bagian alert sukses/flash message sudah dihapus dari sini --}}
-
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 
                 <div class="flex justify-between items-center mb-4">
@@ -37,13 +34,12 @@
                                 <th class="border px-4 py-2 text-left">Jumlah</th>
                                 <th class="border px-4 py-2 text-left">Satuan</th>
                                 <th class="border px-4 py-2 text-left">Supplier</th>
-                                <th class="border px-4 py-2 text-left">Aksi</th>
+                                <th class="border px-4 py-2 text-left">Dicatat Oleh</th> <th class="border px-4 py-2 text-left">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($stokMasuks as $index => $stok)
                                 <tr>
-                                    {{-- SUDAH DIUBAH: Penomoran normal menggunakan index karena tidak pakai pagination lagi --}}
                                     <td class="border px-4 py-2">{{ $index + 1 }}</td>
                                     <td class="border px-4 py-2">{{ \Carbon\Carbon::parse($stok->tanggal)->format('d-m-Y') }}</td>
                                     <td class="border px-4 py-2">{{ $stok->product->kode_barang ?? '-' }}</td>
@@ -51,8 +47,13 @@
                                     <td class="border px-4 py-2 text-green-600 font-bold">+{{ $stok->jumlah }}</td>
                                     <td class="border px-4 py-2">{{ strtolower($stok->product->satuan ?? '-') }}</td>
                                     <td class="border px-4 py-2">{{ $stok->supplier ?? '-' }}</td>
+                                    
+                                    <td class="border px-4 py-2 text-xs font-semibold text-gray-600">
+                                        {{ $stok->pencatat->name ?? 'Admin' }}
+                                    </td>
+
                                     <td class="border px-4 py-2">
-                                        <form action="{{ route('stok_masuk.destroy', $stok->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin hapus data ini? Stok barang akan otomatis dikurangi kembali.')">
+                                        <form action="{{ route('stok_masuk.destroy', $stok->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin hapus data ini?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" style="background: #dc2626 !important; color: white !important; padding: 5px 10px; border-radius: 3px; border: none; font-size: 14px; font-weight: bold; cursor: pointer;">
@@ -63,17 +64,12 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="border px-4 py-2 text-center">
-                                        Belum ada data stok masuk.
-                                    </td>
+                                    <td colspan="9" class="border px-4 py-2 text-center">Belum ada data stok masuk.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-
-                {{-- SUDAH DIUBAH: Bagian link pagination bawah sudah dihapus total --}}
-
             </div>
         </div>
     </div>
