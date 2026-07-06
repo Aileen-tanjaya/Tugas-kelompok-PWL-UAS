@@ -42,7 +42,8 @@
                         <tbody>
                             @forelse($stokKeluars as $key => $sk)
                                 <tr>
-                                    <td class="border px-4 py-2">{{ $stokKeluars->firstItem() + $key }}</td>
+                                    {{-- SUDAH DIUBAH: Penomoran normal urut dari indeks ke-1 --}}
+                                    <td class="border px-4 py-2">{{ $key + 1 }}</td>
                                     <td class="border px-4 py-2">{{ \Carbon\Carbon::parse($sk->tanggal)->format('d-m-Y') }}</td>
                                     <td class="border px-4 py-2">{{ $sk->product->kode_barang ?? '-' }}</td>
                                     <td class="border px-4 py-2">{{ $sk->product->nama_barang ?? 'Produk Dihapus' }}</td>
@@ -70,9 +71,8 @@
                     </table>
                 </div>
 
-                <div class="mt-4">
-                    {{ $stokKeluars->links() }}
-                </div>
+                {{-- SUDAH DIUBAH: Bagian pagination bawah sudah dihapus total --}}
+
             </div>
         </div>
     </div>

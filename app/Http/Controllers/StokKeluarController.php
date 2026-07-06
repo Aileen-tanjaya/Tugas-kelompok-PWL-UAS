@@ -11,7 +11,8 @@ class StokKeluarController extends Controller
 {
     public function index()
     {
-        $stokKeluars = StokKeluar::with('product')->latest()->paginate(10);
+        // SUDAH DIUBAH: Menggunakan get() agar langsung tampil semua data dalam 1 halaman
+        $stokKeluars = StokKeluar::with('product')->latest()->get();
         return view('stok_keluar.index', compact('stokKeluars'));
     }
 
@@ -21,7 +22,7 @@ class StokKeluarController extends Controller
         return view('stok_keluar.create', compact('products'));
     }
 
-public function store(Request $request)
+    public function store(Request $request)
     {
         // 1. Validasi Input Data
         $request->validate([

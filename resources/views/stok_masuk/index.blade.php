@@ -43,7 +43,8 @@
                         <tbody>
                             @forelse($stokMasuks as $index => $stok)
                                 <tr>
-                                    <td class="border px-4 py-2">{{ $stokMasuks->firstItem() + $index }}</td>
+                                    {{-- SUDAH DIUBAH: Penomoran normal menggunakan index karena tidak pakai pagination lagi --}}
+                                    <td class="border px-4 py-2">{{ $index + 1 }}</td>
                                     <td class="border px-4 py-2">{{ \Carbon\Carbon::parse($stok->tanggal)->format('d-m-Y') }}</td>
                                     <td class="border px-4 py-2">{{ $stok->product->kode_barang ?? '-' }}</td>
                                     <td class="border px-4 py-2">{{ $stok->product->nama_barang ?? 'Produk Terhapus' }}</td>
@@ -71,9 +72,7 @@
                     </table>
                 </div>
 
-                <div class="mt-4">
-                    {{ $stokMasuks->links() }}
-                </div>
+                {{-- SUDAH DIUBAH: Bagian link pagination bawah sudah dihapus total --}}
 
             </div>
         </div>

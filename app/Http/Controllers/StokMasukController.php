@@ -10,7 +10,8 @@ class StokMasukController extends Controller
 {
     public function index()
     {
-        $stokMasuks = StokMasuk::latest()->paginate(10);
+        // SUDAH DIUBAH: Menggunakan get() agar langsung tampil semua dalam 1 halaman
+        $stokMasuks = StokMasuk::latest()->get();
 
         return view('stok_masuk.index', compact('stokMasuks'));
     }
