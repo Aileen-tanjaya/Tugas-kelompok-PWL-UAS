@@ -6,39 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('stok_masuks', function (Blueprint $table) {
-
             $table->id();
 
-            // Relasi ke tabel products
-            $table->foreignId('product_id')
-                  ->constrained('products')
-                  ->onDelete('cascade');
+            $table->unsignedBigInteger('user_id'); 
 
-            // Jumlah barang masuk
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+
             $table->integer('jumlah');
-
-            // Tanggal barang masuk
             $table->date('tanggal');
-
-            // Nama supplier
             $table->string('supplier')->nullable();
 
-            // Keterangan tambahan
-            $table->text('keterangan')->nullable();
-
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('stok_masuks');

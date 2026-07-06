@@ -41,22 +41,26 @@
                                 <th class="border px-4 py-2 text-left">Nama Barang</th>
                                 <th class="border px-4 py-2 text-left">Satuan</th>
                                 <th class="border px-4 py-2 text-left">Harga</th>
+                                <th class="border px-4 py-2 text-left">Dibuat Oleh</th>
+                                <th class="border px-4 py-2 text-left">Terakhir Diubah</th>
                                 <th class="border px-4 py-2 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($products as $key => $product)
                                 <tr>
-                                    <td class="border px-4 py-2">
-                                        {{ $key + 1 }}
+                                    <td class="border px-4 py-2 font-bold">
+                                        Rp {{ number_format($product->harga ?? 0, 0, ',', '.') }}
                                     </td>
-                                    <td class="border px-4 py-2 font-mono font-bold text-gray-600">
-                                        {{ $product->kode_barang }}
+
+                                    <td class="border px-4 py-2 text-xs text-gray-600">
+                                        {{ $product->pembuat->name ?? 'Admin' }}
                                     </td>
-                                    <td class="border px-4 py-2 font-medium">
-                                        {{ $product->nama_barang }}
+                                    <td class="border px-4 py-2 text-xs text-gray-600">
+                                        {{ $product->pengubah->name ?? '-' }}
                                     </td>
-                                    <td class="border px-4 py-2">
+
+                                    <td class="border px-4 py-2 flex justify-center gap-2">
                                         @php
                                             $satuan = strtolower($product->satuan ?? 'pcs');
                                         @endphp
@@ -86,13 +90,13 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="border px-4 py-2 text-center text-gray-500 italic">
-                                        Data barang tidak ditemukan.
-                                    </td>
-                                </tr>
-                            @endforelse
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="border px-4 py-2 text-center text-gray-500 italic">
+                                                Data barang tidak ditemukan.
+                                            </td>
+                                        </tr>
+                                    @endforelse
                         </tbody>
                     </table>
                 </div>

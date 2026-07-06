@@ -7,10 +7,8 @@ use Illuminate\Http\Request;
 
 class StokController extends Controller
 {
-    // Mengubah nama fungsi agar tidak bentrok dengan Controller induk bawaan
     public function tampilkanStok(Request $request)
     {
-        // 1. Ambil semua produk - DITAMBAHKAN URUTAN TERBARU DI ATAS (orderBy)
         $query = Product::query()->orderBy('id', 'desc');
 
         if ($request->has('search') && $request->search != '') {
@@ -20,12 +18,10 @@ class StokController extends Controller
 
         $allProducts = $query->get();
 
-        // 2. Pasangkan hitungan report real-time ke setiap produk
         foreach ($allProducts as $product) {
             $product->calculated_stok = $product->sisa_stok_report;
         }
 
-        // 3. Filter berdasarkan Status Dropdown (jika dipilih)
         if ($request->has('status') && $request->status != '') {
             $allProducts = $allProducts->filter(function ($product) use ($request) {
                 if ($request->status == 'habis') {
@@ -39,7 +35,6 @@ class StokController extends Controller
             });
         }
 
-        // 4. HITUNG STATISTIK KOTAK (Aman, Menipis, Habis) secara live report
         $productsForBadges = Product::all();
         $totalBarang = $productsForBadges->count();
         $stokAman = 0;
@@ -57,7 +52,6 @@ class StokController extends Controller
             }
         }
 
-        // Kirim data ke view index manajemen stok
         $products = $allProducts;
 
         return view('stok.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));

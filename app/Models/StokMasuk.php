@@ -16,11 +16,16 @@ class StokMasuk extends Model
         'jumlah',
         'tanggal',
         'supplier',
-        'keterangan',
+        'user_id', 
     ];
 
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function pencatat()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
