@@ -1,20 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    // Menampilkan daftar barang
     public function index(): View
     {
         $query = Product::query();
-
         if (request()->has('search') && request()->search != '') {
             $search = request()->search;
             $query->where(function($q) use ($search) {
@@ -23,12 +21,15 @@ class ProductController extends Controller
             });
         }
 
+        // Tampil semua urut berdasarkan id terbaru
         $products = $query->orderBy('id', 'desc')->get();
 
+        // SINKRONISASI LOGIKA REAL-TIME: Pasang hasil hitungan (Masuk - Keluar) ke masing-masing produk
         foreach ($products as $product) {
             $product->calculated_stok = $product->sisa_stok_report;
         }
 
+        // HITUNG STATISTIK KOTAK SECARA LIVE REPORT (Aman, Menipis, Habis)
         $productsForBadges = Product::all();
         $totalBarang = $productsForBadges->count();
         $stokAman = 0;
@@ -45,7 +46,6 @@ class ProductController extends Controller
                 $stokAman++;
             }
         }
-
         return view('products.index', compact('products', 'totalBarang', 'stokAman', 'stokMenipis', 'stokHabis'));
     }
 
@@ -65,15 +65,18 @@ class ProductController extends Controller
             'harga'       => 'required|numeric|min:0',
         ]);
 
+        // Simpan data produk ke tabel products
         Product::create([
             'kode_barang' => $validated['kode_barang'],
             'nama_barang' => $validated['nama_barang'],
             'satuan'      => $validated['satuan'],
             'harga'       => $validated['harga'],
-            'user_id'     => Auth::id(),
         ]);
 
+        // Catatan: Pembuatan stok default '0' dihapus karena stok sekarang dihitung live dari riwayat transaksi masuk & keluar.
+
         return Redirect::route('products.index')->with('success', 'Barang berhasil ditambahkan.');
+
     }
 
     // Edit Barang
@@ -91,13 +94,12 @@ class ProductController extends Controller
             'satuan'      => 'required|string|max:50',
             'harga'       => 'required|numeric|min:0',
         ]);
-        
+
         $product->update([
             'kode_barang' => $validated['kode_barang'],
             'nama_barang' => $validated['nama_barang'],
             'satuan'      => $validated['satuan'],
             'harga'       => $validated['harga'],
-            'updated_by'  => Auth::id(),
         ]);
 
         return Redirect::route('products.index')->with('success', 'Barang berhasil diperbarui.');
@@ -106,10 +108,12 @@ class ProductController extends Controller
     // Hapus Barang
     public function destroy(Product $product): RedirectResponse
     {
+        // Menghapus data riwayat transaksi terkait agar tidak error foreign key
         $product->stokMasuks()->delete();
         $product->stokKeluars()->delete();
         $product->delete();
-        
         return Redirect::route('products.index')->with('success', 'Barang berhasil dihapus.');
     }
-}
+
+} 
+

@@ -26,7 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Jangan lupa ganti juga di bagian drop agar sinkron
         Schema::dropIfExists('stoks');
     }
 };
