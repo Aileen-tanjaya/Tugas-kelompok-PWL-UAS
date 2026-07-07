@@ -24,12 +24,10 @@ class ProductController extends Controller
         // Tampil semua urut berdasarkan id terbaru
         $products = $query->orderBy('id', 'desc')->get();
 
-        // SINKRONISASI LOGIKA REAL-TIME: Pasang hasil hitungan (Masuk - Keluar) ke masing-masing produk
         foreach ($products as $product) {
             $product->calculated_stok = $product->sisa_stok_report;
         }
 
-        // HITUNG STATISTIK KOTAK SECARA LIVE REPORT (Aman, Menipis, Habis)
         $productsForBadges = Product::all();
         $totalBarang = $productsForBadges->count();
         $stokAman = 0;
@@ -73,8 +71,6 @@ class ProductController extends Controller
             'harga'       => $validated['harga'],
         ]);
 
-        // Catatan: Pembuatan stok default '0' dihapus karena stok sekarang dihitung live dari riwayat transaksi masuk & keluar.
-
         return Redirect::route('products.index')->with('success', 'Barang berhasil ditambahkan.');
 
     }
@@ -108,7 +104,6 @@ class ProductController extends Controller
     // Hapus Barang
     public function destroy(Product $product): RedirectResponse
     {
-        // Menghapus data riwayat transaksi terkait agar tidak error foreign key
         $product->stokMasuks()->delete();
         $product->stokKeluars()->delete();
         $product->delete();
